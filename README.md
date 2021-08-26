@@ -28,3 +28,7 @@ Output: {"Url":"https:\/\/www.youtube.com\/watch?v=vAiScGnRfP8","Hash":null,"Siz
 <p>sudo youtube-dl -U</p>
 <br>
 <p>For IPFS installation check: <a href="https://ipfs.io/ipfs/bafybeie4pj7lrqiiwwlvazbbxxwzydmcxhtczlw63plqass3kn2br2g5ye/install/ipfs-desktop/" target="_blank" rel="noopener">https://ipfs.io/ipfs/bafybeie4pj7lrqiiwwlvazbbxxwzydmcxhtczlw63plqass3kn2br2g5ye/install/ipfs-desktop/</a></p>
+<br>
+OR the link below for the commandline
+<p>For IPFS installation check: <a href="https://ipfs.io/ipfs/bafybeie4pj7lrqiiwwlvazbbxxwzydmcxhtczlw63plqass3kn2br2g5ye/install/command-line/" target="_blank" rel="noopener">https://ipfs.io/ipfs/bafybeie4pj7lrqiiwwlvazbbxxwzydmcxhtczlw63plqass3kn2br2g5ye/install/command-line/</a></p>
+<br>
