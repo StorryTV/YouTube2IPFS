@@ -12,7 +12,9 @@ $ipfsapi = array(
 	'port' => '5001',
 );
 
-if (filter_var($_GET['video'], FILTER_VALIDATE_URL) && (parse_url($_GET['video'])['host'] === 'www.youtube.com')) {
+if (filter_var($_GET['video'], FILTER_VALIDATE_URL) &&
+	((parse_url($_GET['video'])['host'] === 'www.youtube.com') ||
+	(parse_url($_GET['video'])['host'] === 'youtube.com'))) {
 	$video = $_GET['video'];
 	$json_ = $_GET['json'];
 	$hashes = file_get_contents(realpath(getcwd()) . '/hashes/.ipfs');
@@ -59,7 +61,9 @@ if (filter_var($_GET['video'], FILTER_VALIDATE_URL) && (parse_url($_GET['video']
 		}
 	}
 	unlink(realpath(getcwd()) . '/videos/' . $tmp . '.tmp');
-} elseif (filter_var($_POST['video'], FILTER_VALIDATE_URL) && (parse_url($_POST['video'])['host'] === 'www.youtube.com')) {
+} elseif (filter_var($_POST['video'], FILTER_VALIDATE_URL) &&
+	((parse_url($_POST['video'])['host'] === 'www.youtube.com') ||
+	(parse_url($_POST['video'])['host'] === 'youtube.com'))) {
 	$video = $_POST['video'];
 	$json_ = $_POST['json'];
 	$hashes = file_get_contents(realpath(getcwd()) . '/hashes/.ipfs');
