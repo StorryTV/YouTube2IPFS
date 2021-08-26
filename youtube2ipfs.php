@@ -11,6 +11,7 @@ $ipfsapi = array(
 	'host' => 'ipfs.infura.io',
 	'port' => '5001',
 );
+$max_filesize = '100m';
 
 if (filter_var($_GET['video'], FILTER_VALIDATE_URL) &&
 	((parse_url($_GET['video'])['host'] === 'www.youtube.com') ||
@@ -36,7 +37,7 @@ if (filter_var($_GET['video'], FILTER_VALIDATE_URL) &&
 		if (!file_exists(realpath(getcwd()) . '/hashes')) {
 			mkdir(realpath(getcwd()) . '/hashes', 0760);
 		}
-		exec('youtube-dl -f best -q "' . $video . '" -o ' . realpath(getcwd()) . '/videos/' . $tmp . '.tmp 2>&1');
+		exec('youtube-dl -f best -q "' . $video . '" -o ' . realpath(getcwd()) . '/videos/' . $tmp . '.tmp --max-filesize ' . $max_filesize . ' 2>&1');
 		if (!file_exists(realpath(getcwd()) . '/hashes')) {
 			mkdir(realpath(getcwd()) . '/hashes', 0760);
 		}
@@ -47,11 +48,17 @@ if (filter_var($_GET['video'], FILTER_VALIDATE_URL) &&
 		$ipfs = json_decode($output[0], TRUE);
 		$arr = array($video => $ipfs['Hash']);
 		file_put_contents(realpath(getcwd()) . '/hashes/.ipfs', json_encode($arr), FILE_APPEND);
+		if ($ipfs['Size'] === null) {
+			$error = 'size';
+		} else {
+			$error = false;
+		}
 		if ($json_ === 'true') {
 			$arr = array(
 				'Url' => $video,
 				'Hash' => $ipfs['Hash'],
 				'Size' => $ipfs['Size'],
+				'Error' => $error,
 			);
 			header('Content-type: application/json; charset=utf-8');
 			echo json_encode($arr);
@@ -85,7 +92,7 @@ if (filter_var($_GET['video'], FILTER_VALIDATE_URL) &&
 		if (!file_exists(realpath(getcwd()) . '/hashes')) {
 			mkdir(realpath(getcwd()) . '/hashes', 0760);
 		}
-		exec('youtube-dl -f best -q "' . $video . '" -o ' . realpath(getcwd()) . '/videos/' . $tmp . '.tmp 2>&1');
+		exec('youtube-dl -f best -q "' . $video . '" -o ' . realpath(getcwd()) . '/videos/' . $tmp . '.tmp --max-filesize ' . $max_filesize . ' 2>&1');
 		if (!file_exists(realpath(getcwd()) . '/hashes')) {
 			mkdir(realpath(getcwd()) . '/hashes', 0760);
 		}
@@ -96,11 +103,17 @@ if (filter_var($_GET['video'], FILTER_VALIDATE_URL) &&
 		$ipfs = json_decode($output[0], TRUE);
 		$arr = array($video => $ipfs['Hash']);
 		file_put_contents(realpath(getcwd()) . '/hashes/.ipfs', json_encode($arr), FILE_APPEND);
+		if ($ipfs['Size'] === null) {
+			$error = 'size';
+		} else {
+			$error = false;
+		}
 		if ($json_ === 'true') {
 			$arr = array(
 				'Url' => $video,
 				'Hash' => $ipfs['Hash'],
 				'Size' => $ipfs['Size'],
+				'Error' => $error,
 			);
 			header('Content-type: application/json; charset=utf-8');
 			echo json_encode($arr);
