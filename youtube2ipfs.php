@@ -1,31 +1,69 @@
 <?php
 
-if (filter_var($_GET['video'], FILTER_VALIDATE_URL) && (parse_url($_GET['video'])['host'] === 'youtube.com')) {
+//Default IPFS below can be changed to your own IPFS node
+//$ipfsapi = array(
+//	'protocol' => 'http',
+//	'host' => '127.0.0.1',
+//	'port' => '5001',
+//);
+$ipfsapi = array(
+	'protocol' => 'https',
+	'host' => 'ipfs.infura.io',
+	'port' => '5001',
+);
+
+if (filter_var($_GET['video'], FILTER_VALIDATE_URL) && (parse_url($_GET['video'])['host'] === 'www.youtube.com')) {
+	$video = $_GET['video'];
+	$json_ = $_GET['json'];
 	$tmp = explode('.', microtime(true))[0];
-	exec('youtube-dl -g -f best "' . $_GET['video'] . '"', $output);
-	exec('wget ' . $output[0] . ' -O ' . realpath(getcwd()) . '/videos/' . $tmp . '.mp4', $output);
-	exec('ipfs add ' . realpath(getcwd()) . '/videos/' . $tmp . '.mp4 -Q', $output);
-	if ($_GET['json'] === 'true') {
-		$arr = array('ipfshash' => $output[0], 'youtubeurl' => $_GET['video']);
+	if (!file_exists(realpath(getcwd()) . '/hashes')) {
+		mkdir(realpath(getcwd()) . '/hashes', 0760);
+	}
+	exec('youtube-dl -f best -q "' . $video . '" -o ' . realpath(getcwd()) . '/videos/' . $tmp . '.tmp 2>&1');
+	if (!file_exists(realpath(getcwd()) . '/hashes')) {
+		mkdir(realpath(getcwd()) . '/hashes', 0760);
+	}
+	exec('curl "' . $ipfsapi['protocol'] . '://' . $ipfsapi['host'] . ':' . $ipfsapi['port'] . '/api/v0/add?stream-channels=true&recursive=false&pin=true&wrap-with-directory=false&progress=false" \
+			-X POST \
+			-H "Content-Type: multipart/form-data" \
+			-F file=@"' . realpath(getcwd()) . '/videos/' . $tmp . '.tmp"', $output, $ipfs_upload);
+	$arr = array($video => $output);
+	file_put_contents(realpath(getcwd()) . '/hashes/.ipfs', json_encode($arr), FILE_APPEND);
+	if ($json_ === 'false') {
+		$arr = array('Url' => $video, 'Hash' => $output[0]['Hash'], 'Size' => $output[0]['Size']);
 		header('Content-type: application/json; charset=utf-8');
 		echo json_encode($arr);
 	} else {
 		header('Content-type: text/html; charset=utf-8');
-		echo $output[0];
+		echo $output[0]['Hash'];
 	}
-} elseif (filter_var($_POST['video'], FILTER_VALIDATE_URL) && (parse_url($_POST['video'])['host'] === 'youtube.com')) {
+	unlink(realpath(getcwd()) . '/videos/' . $tmp . '.tmp');
+} elseif (filter_var($_POST['video'], FILTER_VALIDATE_URL) && (parse_url($_POST['video'])['host'] === ('youtube.com' || 'www.youtube.com'))) {
+	$video = $_POST['video'];
+	$json_ = $_POST['json'];
 	$tmp = explode('.', microtime(true))[0];
-	exec('youtube-dl -g -f best "' . $_POST['video'] . '"', $output);
-	exec('wget ' . $output[0] . ' -O ' . realpath(getcwd()) . '/videos/' . $tmp . '.mp4', $output);
-	exec('ipfs add ' . realpath(getcwd()) . '/videos/' . $tmp . '.mp4 -Q', $output);
-	if ($_POST['json'] === 'true') {
-		$arr = array('ipfshash' => $output[0], 'youtubeurl' => $_POST['video']);
+	if (!file_exists(realpath(getcwd()) . '/hashes')) {
+		mkdir(realpath(getcwd()) . '/hashes', 0760);
+	}
+	exec('youtube-dl -f best -q "' . $video . '" -o ' . realpath(getcwd()) . '/videos/' . $tmp . '.tmp 2>&1');
+	if (!file_exists(realpath(getcwd()) . '/hashes')) {
+		mkdir(realpath(getcwd()) . '/hashes', 0760);
+	}
+	exec('curl "' . $ipfsapi['protocol'] . '://' . $ipfsapi['host'] . ':' . $ipfsapi['port'] . '/api/v0/add?stream-channels=true&recursive=false&pin=true&wrap-with-directory=false&progress=false" \
+			-X POST \
+			-H "Content-Type: multipart/form-data" \
+			-F file=@"' . realpath(getcwd()) . '/videos/' . $tmp . '.tmp"', $output, $ipfs_upload);
+	$arr = array($video => $output);
+	file_put_contents(realpath(getcwd()) . '/hashes/.ipfs', json_encode($arr), FILE_APPEND);
+	if ($json_ === 'false') {
+		$arr = array('Url' => $video, 'Hash' => $output[0]['Hash'], 'Size' => $output[0]['Size']);
 		header('Content-type: application/json; charset=utf-8');
 		echo json_encode($arr);
 	} else {
 		header('Content-type: text/html; charset=utf-8');
-		echo $output[0];
+		echo $output[0]['Hash'];
 	}
+	unlink(realpath(getcwd()) . '/videos/' . $tmp . '.tmp');
 } else {
 	header('Content-type: text/html; charset=utf-8');
 	echo 'Error: please check the provided information';
