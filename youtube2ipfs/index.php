@@ -1,5 +1,9 @@
 <?php
 
+ini_set('display_errors', '1');
+ini_set('display_startup_errors', '1');
+error_reporting(E_ALL);
+
 //Default IPFS below can be changed to your own IPFS node
 //$ipfsapi = array(
 //	'protocol' => 'http',
@@ -18,6 +22,30 @@ if (filter_var($_GET['video'], FILTER_VALIDATE_URL) &&
 	(parse_url($_GET['video'])['host'] === 'youtube.com'))) {
 	$video = $_GET['video'];
 	$json_ = $_GET['json'];
+	if (!file_exists(realpath(getcwd()) . '/processing')) {
+		mkdir(realpath(getcwd()) . '/processing', 0760);
+	}
+	if (file_exists(realpath(getcwd()) . '/processing/' . rawurlencode($video) . '.tmp')) {
+		$processing = file_get_contents(realpath(getcwd()) . '/processing/' . rawurlencode($video) . '.tmp');
+	} else {
+		$processing = false;
+	}
+	if ($processing === 'true') {
+		if ($json_ === 'true') {
+			$arr = array(
+				'Url' => $video,
+				'Hash' => false,
+				'Size' => false,
+				'Error' => 'processing',
+			);
+			header('Content-type: application/json; charset=utf-8');
+			exit(json_encode($arr));
+		} else {
+			header('Content-type: text/html; charset=utf-8');
+			exit('processing');
+		}
+	}
+	file_put_contents(realpath(getcwd()) . '/processing/' . rawurlencode($video) . '.tmp', 'true');
 	$hashes = file_get_contents(realpath(getcwd()) . '/hashes/.ipfs');
 	if (json_decode($hashes, TRUE)[$video]) {
 		$ipfsHash = json_decode($hashes, TRUE)[$video];
@@ -67,12 +95,37 @@ if (filter_var($_GET['video'], FILTER_VALIDATE_URL) &&
 			echo $ipfs['Hash'];
 		}
 	}
+	unlink(realpath(getcwd()) . '/processing/' . rawurlencode($video) . '.tmp');
 	unlink(realpath(getcwd()) . '/videos/' . $tmp . '.tmp');
 } elseif (filter_var($_POST['video'], FILTER_VALIDATE_URL) &&
 	((parse_url($_POST['video'])['host'] === 'www.youtube.com') ||
 	(parse_url($_POST['video'])['host'] === 'youtube.com'))) {
 	$video = $_POST['video'];
 	$json_ = $_POST['json'];
+	if (!file_exists(realpath(getcwd()) . '/processing')) {
+		mkdir(realpath(getcwd()) . '/processing', 0760);
+	}
+	if (file_exists(realpath(getcwd()) . '/processing/' . rawurlencode($video) . '.tmp')) {
+		$processing = file_get_contents(realpath(getcwd()) . '/processing/' . rawurlencode($video) . '.tmp');
+	} else {
+		$processing = false;
+	}
+	if ($processing === 'true') {
+		if ($json_ === 'true') {
+			$arr = array(
+				'Url' => $video,
+				'Hash' => false,
+				'Size' => false,
+				'Error' => 'processing',
+			);
+			header('Content-type: application/json; charset=utf-8');
+			exit(json_encode($arr));
+		} else {
+			header('Content-type: text/html; charset=utf-8');
+			exit('processing');
+		}
+	}
+	file_put_contents(realpath(getcwd()) . '/processing/' . rawurlencode($video) . '.tmp', 'true');
 	$hashes = file_get_contents(realpath(getcwd()) . '/hashes/.ipfs');
 	if (json_decode($hashes, TRUE)[$video]) {
 		$ipfsHash = json_decode($hashes, TRUE)[$video];
@@ -122,6 +175,7 @@ if (filter_var($_GET['video'], FILTER_VALIDATE_URL) &&
 			echo $ipfs['Hash'];
 		}
 	}
+	unlink(realpath(getcwd()) . '/processing/' . rawurlencode($video) . '.tmp');
 	unlink(realpath(getcwd()) . '/videos/' . $tmp . '.tmp');
 } else {
 	header('Content-type: text/html; charset=utf-8');
@@ -131,4 +185,3 @@ if (filter_var($_GET['video'], FILTER_VALIDATE_URL) &&
 exit();
 
 ?>
-
