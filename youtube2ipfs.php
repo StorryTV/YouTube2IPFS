@@ -27,18 +27,23 @@ if (filter_var($_GET['video'], FILTER_VALIDATE_URL) && (parse_url($_GET['video']
 			-X POST \
 			-H "Content-Type: multipart/form-data" \
 			-F file=@"' . realpath(getcwd()) . '/videos/' . $tmp . '.tmp"', $output, $ipfs_upload);
-	$arr = array($video => $output);
+	$ipfs = json_decode($output[0], TRUE);
+	$arr = array($video => $ipfs['Hash']);
 	file_put_contents(realpath(getcwd()) . '/hashes/.ipfs', json_encode($arr), FILE_APPEND);
 	if ($json_ === 'false') {
-		$arr = array('Url' => $video, 'Hash' => $output[0]['Hash'], 'Size' => $output[0]['Size']);
+		$arr = array(
+			'Url' => $video,
+			'Hash' => $ipfs['Hash'],
+			'Size' => $ipfs['Size'],
+		);
 		header('Content-type: application/json; charset=utf-8');
 		echo json_encode($arr);
 	} else {
 		header('Content-type: text/html; charset=utf-8');
-		echo $output[0]['Hash'];
+		echo $ipfs['Hash'];
 	}
 	unlink(realpath(getcwd()) . '/videos/' . $tmp . '.tmp');
-} elseif (filter_var($_POST['video'], FILTER_VALIDATE_URL) && (parse_url($_POST['video'])['host'] === ('youtube.com' || 'www.youtube.com'))) {
+} elseif (filter_var($_POST['video'], FILTER_VALIDATE_URL) && (parse_url($_POST['video'])['host'] === 'www.youtube.com')) {
 	$video = $_POST['video'];
 	$json_ = $_POST['json'];
 	$tmp = explode('.', microtime(true))[0];
@@ -53,15 +58,20 @@ if (filter_var($_GET['video'], FILTER_VALIDATE_URL) && (parse_url($_GET['video']
 			-X POST \
 			-H "Content-Type: multipart/form-data" \
 			-F file=@"' . realpath(getcwd()) . '/videos/' . $tmp . '.tmp"', $output, $ipfs_upload);
-	$arr = array($video => $output);
+	$ipfs = json_decode($output[0], TRUE);
+	$arr = array($video => $ipfs['Hash']);
 	file_put_contents(realpath(getcwd()) . '/hashes/.ipfs', json_encode($arr), FILE_APPEND);
 	if ($json_ === 'false') {
-		$arr = array('Url' => $video, 'Hash' => $output[0]['Hash'], 'Size' => $output[0]['Size']);
+		$arr = array(
+			'Url' => $video,
+			'Hash' => $ipfs['Hash'],
+			'Size' => $ipfs['Size'],
+		);
 		header('Content-type: application/json; charset=utf-8');
 		echo json_encode($arr);
 	} else {
 		header('Content-type: text/html; charset=utf-8');
-		echo $output[0]['Hash'];
+		echo $ipfs['Hash'];
 	}
 	unlink(realpath(getcwd()) . '/videos/' . $tmp . '.tmp');
 } else {
