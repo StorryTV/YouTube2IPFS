@@ -39,11 +39,11 @@ if (filter_var($_GET['video'], FILTER_VALIDATE_URL) &&
 				'Error' => 'processing',
 			);
 			header('Content-type: application/json; charset=utf-8');
-			header('Content-type: public, max-age=172800, immutable');
+			header('Cache-Control: public, max-age=900, immutable');
 			exit(json_encode($arr));
 		} else {
 			header('Content-type: text/html; charset=utf-8');
-			header('Cache-Control: public, max-age=172800, immutable');
+			header('Cache-Control: public, max-age=900, immutable');
 			exit('processing');
 		}
 	}
@@ -57,11 +57,11 @@ if (filter_var($_GET['video'], FILTER_VALIDATE_URL) &&
 				'Hash' => $ipfsHash,
 			);
 			header('Content-type: application/json; charset=utf-8');
-			header('Content-type: public, max-age=31536000, immutable');
+			header('Cache-Control: public, max-age=31536000, immutable');
 			echo json_encode($arr);
 		} else {
 			header('Content-type: text/html; charset=utf-8');
-			header('Content-type: public, max-age=31536000, immutable');
+			header('Cache-Control: public, max-age=31536000, immutable');
 			echo $ipfsHash;
 		}
 	} else {
@@ -93,11 +93,11 @@ if (filter_var($_GET['video'], FILTER_VALIDATE_URL) &&
 				'Error' => $error,
 			);
 			header('Content-type: application/json; charset=utf-8');
-			header('Content-type: public, max-age=31536000, immutable');
+			header('Cache-Control: public, max-age=31536000, immutable');
 			echo json_encode($arr);
 		} else {
 			header('Content-type: text/html; charset=utf-8');
-			header('Content-type: public, max-age=31536000, immutable');
+			header('Cache-Control: public, max-age=31536000, immutable');
 			echo $ipfs['Hash'];
 		}
 	}
@@ -125,11 +125,11 @@ if (filter_var($_GET['video'], FILTER_VALIDATE_URL) &&
 				'Error' => 'processing',
 			);
 			header('Content-type: application/json; charset=utf-8');
-			header('Content-type: public, max-age=172800, immutable');
+			header('Cache-Control: public, max-age=900, immutable');
 			exit(json_encode($arr));
 		} else {
 			header('Content-type: text/html; charset=utf-8');
-			header('Content-type: public, max-age=172800, immutable');
+			header('Cache-Control: public, max-age=900, immutable');
 			exit('processing');
 		}
 	}
@@ -143,11 +143,11 @@ if (filter_var($_GET['video'], FILTER_VALIDATE_URL) &&
 				'Hash' => $ipfsHash,
 			);
 			header('Content-type: application/json; charset=utf-8');
-			header('Content-type: public, max-age=31536000, immutable');
+			header('Cache-Control: public, max-age=31536000, immutable');
 			echo json_encode($arr);
 		} else {
 			header('Content-type: text/html; charset=utf-8');
-			header('Content-type: public, max-age=31536000, immutable');
+			header('Cache-Control: public, max-age=31536000, immutable');
 			echo $ipfsHash;
 		}
 	} else {
@@ -179,11 +179,11 @@ if (filter_var($_GET['video'], FILTER_VALIDATE_URL) &&
 				'Error' => $error,
 			);
 			header('Content-type: application/json; charset=utf-8');
-			header('Content-type: public, max-age=31536000, immutable');
+			header('Cache-Control: public, max-age=31536000, immutable');
 			echo json_encode($arr);
 		} else {
 			header('Content-type: text/html; charset=utf-8');
-			header('Content-type: public, max-age=31536000, immutable');
+			header('Cache-Control: public, max-age=31536000, immutable');
 			echo $ipfs['Hash'];
 		}
 	}
@@ -191,7 +191,7 @@ if (filter_var($_GET['video'], FILTER_VALIDATE_URL) &&
 	unlink(realpath(getcwd()) . '/videos/' . $tmp . '.tmp');
 } else {
 	header('Content-type: text/html; charset=utf-8');
-	header('Content-type: public, max-age=172800, immutable');
+	header('Cache-Control: public, max-age=172800, immutable');
 	echo 'Error: please check the provided information';
 }
 
