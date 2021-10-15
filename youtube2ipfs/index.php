@@ -1,20 +1,21 @@
 <?php
 
+ignore_user_abort(true);
 //ini_set('display_errors', '1');
 //ini_set('display_startup_errors', '1');
 //error_reporting(E_ALL);
 
 //Default IPFS below can be changed to your own IPFS node
-//$ipfsapi = array(
-//	'protocol' => 'http',
-//	'host' => '127.0.0.1',
-//	'port' => '5001',
-//);
-$ipfsapi = array(
+/*$ipfsapi = array(
+	'protocol' => 'http',
+	'host' => '127.0.0.1',
+	'port' => '5001',
+)*/;
+$ipfsapi = [
 	'protocol' => 'https',
 	'host' => 'ipfs.infura.io',
 	'port' => '5001',
-);
+];
 $max_filesize = '100m';
 
 if (filter_var($_GET['video'], FILTER_VALIDATE_URL) &&
@@ -32,12 +33,12 @@ if (filter_var($_GET['video'], FILTER_VALIDATE_URL) &&
 	}
 	if ($processing === 'true') {
 		if ($json_ === 'true') {
-			$arr = array(
+			$arr = [
 				'Url' => $video,
 				'Hash' => false,
 				'Size' => false,
 				'Error' => 'processing',
-			);
+			];
 			header('Content-type: application/json; charset=utf-8');
 			header('Cache-Control: public, max-age=900, immutable');
 			exit(json_encode($arr));
@@ -47,15 +48,14 @@ if (filter_var($_GET['video'], FILTER_VALIDATE_URL) &&
 			exit('processing');
 		}
 	}
-	file_put_contents(realpath(getcwd()) . '/processing/' . rawurlencode($video) . '.tmp', 'true');
 	$hashes = file_get_contents(realpath(getcwd()) . '/hashes/.ipfs');
 	if (json_decode($hashes, TRUE)[$video]) {
 		$ipfsHash = json_decode($hashes, TRUE)[$video];
 		if ($json_ === 'true') {
-			$arr = array(
+			$arr = [
 				'Url' => $video,
 				'Hash' => $ipfsHash,
-			);
+			];
 			header('Content-type: application/json; charset=utf-8');
 			header('Cache-Control: public, max-age=31536000, immutable');
 			echo json_encode($arr);
@@ -65,6 +65,7 @@ if (filter_var($_GET['video'], FILTER_VALIDATE_URL) &&
 			echo $ipfsHash;
 		}
 	} else {
+		file_put_contents(realpath(getcwd()) . '/processing/' . rawurlencode($video) . '.tmp', 'true');
 		$tmp = explode('.', microtime(true))[0];
 		if (!file_exists(realpath(getcwd()) . '/hashes')) {
 			mkdir(realpath(getcwd()) . '/hashes', 0760);
@@ -78,7 +79,7 @@ if (filter_var($_GET['video'], FILTER_VALIDATE_URL) &&
 			-H "Content-Type: multipart/form-data" \
 			-F file=@"' . realpath(getcwd()) . '/videos/' . $tmp . '.tmp"', $output, $ipfs_upload);
 		$ipfs = json_decode($output[0], TRUE);
-		$arr = array($video => $ipfs['Hash']);
+		$arr = [$video => $ipfs['Hash']];
 		file_put_contents(realpath(getcwd()) . '/hashes/.ipfs', json_encode($arr), FILE_APPEND);
 		if ($ipfs['Size'] === null) {
 			$error = 'size';
@@ -86,12 +87,12 @@ if (filter_var($_GET['video'], FILTER_VALIDATE_URL) &&
 			$error = false;
 		}
 		if ($json_ === 'true') {
-			$arr = array(
+			$arr = [
 				'Url' => $video,
 				'Hash' => $ipfs['Hash'],
 				'Size' => $ipfs['Size'],
 				'Error' => $error,
-			);
+			];
 			header('Content-type: application/json; charset=utf-8');
 			header('Cache-Control: public, max-age=31536000, immutable');
 			echo json_encode($arr);
@@ -118,12 +119,12 @@ if (filter_var($_GET['video'], FILTER_VALIDATE_URL) &&
 	}
 	if ($processing === 'true') {
 		if ($json_ === 'true') {
-			$arr = array(
+			$arr = [
 				'Url' => $video,
 				'Hash' => false,
 				'Size' => false,
 				'Error' => 'processing',
-			);
+			];
 			header('Content-type: application/json; charset=utf-8');
 			header('Cache-Control: public, max-age=900, immutable');
 			exit(json_encode($arr));
@@ -133,15 +134,14 @@ if (filter_var($_GET['video'], FILTER_VALIDATE_URL) &&
 			exit('processing');
 		}
 	}
-	file_put_contents(realpath(getcwd()) . '/processing/' . rawurlencode($video) . '.tmp', 'true');
 	$hashes = file_get_contents(realpath(getcwd()) . '/hashes/.ipfs');
 	if (json_decode($hashes, TRUE)[$video]) {
 		$ipfsHash = json_decode($hashes, TRUE)[$video];
 		if ($json_ === 'true') {
-			$arr = array(
+			$arr = [
 				'Url' => $video,
 				'Hash' => $ipfsHash,
-			);
+			];
 			header('Content-type: application/json; charset=utf-8');
 			header('Cache-Control: public, max-age=31536000, immutable');
 			echo json_encode($arr);
@@ -151,6 +151,7 @@ if (filter_var($_GET['video'], FILTER_VALIDATE_URL) &&
 			echo $ipfsHash;
 		}
 	} else {
+		file_put_contents(realpath(getcwd()) . '/processing/' . rawurlencode($video) . '.tmp', 'true');
 		$tmp = explode('.', microtime(true))[0];
 		if (!file_exists(realpath(getcwd()) . '/hashes')) {
 			mkdir(realpath(getcwd()) . '/hashes', 0760);
@@ -164,7 +165,7 @@ if (filter_var($_GET['video'], FILTER_VALIDATE_URL) &&
 			-H "Content-Type: multipart/form-data" \
 			-F file=@"' . realpath(getcwd()) . '/videos/' . $tmp . '.tmp"', $output, $ipfs_upload);
 		$ipfs = json_decode($output[0], TRUE);
-		$arr = array($video => $ipfs['Hash']);
+		$arr = [$video => $ipfs['Hash']];
 		file_put_contents(realpath(getcwd()) . '/hashes/.ipfs', json_encode($arr), FILE_APPEND);
 		if ($ipfs['Size'] === null) {
 			$error = 'size';
@@ -172,12 +173,12 @@ if (filter_var($_GET['video'], FILTER_VALIDATE_URL) &&
 			$error = false;
 		}
 		if ($json_ === 'true') {
-			$arr = array(
+			$arr = [
 				'Url' => $video,
 				'Hash' => $ipfs['Hash'],
 				'Size' => $ipfs['Size'],
 				'Error' => $error,
-			);
+			];
 			header('Content-type: application/json; charset=utf-8');
 			header('Cache-Control: public, max-age=31536000, immutable');
 			echo json_encode($arr);
