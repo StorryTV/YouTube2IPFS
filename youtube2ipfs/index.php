@@ -10,7 +10,7 @@ ignore_user_abort(true);
 	'protocol' => 'http',
 	'host' => '127.0.0.1',
 	'port' => '5001',
-)*/;
+);*/
 $ipfsapi = [
 	'protocol' => 'https',
 	'host' => 'ipfs.infura.io',
